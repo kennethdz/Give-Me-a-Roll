@@ -1,0 +1,35 @@
+{
+    "restaurants": [
+      {
+        "name": "Sushi Paradise",
+        "sushi_rolls": [
+          {
+            "name": "California Roll",
+            "ingredients": ["rice", "crab meat", "avocado", "cucumber", "seaweed", "sesame seeds"]
+          },
+          {
+            "name": "Spicy Tuna Roll",
+            "ingredients": ["rice", "tuna", "spicy mayo", "cucumber", "seaweed", "sesame seeds"]
+          },
+          {
+            "name": "Salmon Avocado Roll",
+            "ingredients": ["rice", "salmon", "avocado", "cucumber", "seaweed", "sesame seeds"]
+          }
+        ]
+      },
+      {
+        "name": "Tokyo Sushi Bar",
+        "sushi_rolls": [
+          {
+            "name": "Dragon Roll",
+            "ingredients": ["rice", "shrimp tempura", "avocado", "eel", "cucumber", "seaweed", "eel sauce"]
+          },
+          {
+            "name": "Rainbow Roll",
+            "ingredients": ["rice", "crab meat", "avocado", "cucumber", "assorted fish slices", "seaweed", "sesame seeds"]
+          }
+        ]
+      }
+    ]
+  }
+  

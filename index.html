@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushi Roll Selector</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .filterButton {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .filterButton.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Select a Restaurant</h2>
+    <select id="restaurantSelect" onchange="showSushiRolls()">
+        <option value="">Select a restaurant...</option>
+    </select>
+
+    <h2>Sushi Rolls</h2>
+    <div id="filterButtons"></div>
+    <table id="sushiTable">
+        <thead>
+            <tr>
+                <th>Roll Name</th>
+                <th>Ingredients</th>
+            </tr>
+        </thead>
+        <tbody id="sushiTableBody">
+        </tbody>
+    </table>
+    <button onclick="resetFilters()">Reset Filters</button>
+
+    <script>
+        // Load data from data.json
+        async function loadData() {
+            const response = await fetch('data.json');
+            const data = await response.json();
+            return data;
+        }
+
+        // Populate restaurant select options
+        async function populateRestaurants() {
+            const data = await loadData();
+            const restaurantSelect = document.getElementById("restaurantSelect");
+            data.restaurants.forEach(restaurant => {
+                const option = document.createElement("option");
+                option.value = restaurant.name;
+                option.textContent = restaurant.name;
+                restaurantSelect.appendChild(option);
+            });
+        }
+        populateRestaurants();
+
+        // Show sushi rolls for selected restaurant
+        async function showSushiRolls() {
+            const selectedRestaurant = document.getElementById("restaurantSelect").value;
+            const data = await loadData();
+            const restaurant = data.restaurants.find(rest => rest.name === selectedRestaurant);
+            const sushiTableBody = document.getElementById("sushiTableBody");
+            sushiTableBody.innerHTML = "";
+            const filterButtonsContainer = document.getElementById("filterButtons");
+            filterButtonsContainer.innerHTML = "";
+            if (restaurant) {
+                const filterButtonsContainer = document.getElementById("filterButtons");
+                const filterButtons = [];
+                restaurant.sushi_rolls.forEach(roll => {
+                    const row = document.createElement("tr");
+                    const nameCell = document.createElement("td");
+                    nameCell.textContent = roll.name;
+                    const ingredientsCell = document.createElement("td");
+                    ingredientsCell.textContent = roll.ingredients.join(", ");
+                    row.appendChild(nameCell);
+                    row.appendChild(ingredientsCell);
+                    sushiTableBody.appendChild(row);
+                    roll.ingredients.forEach(ingredient => {
+                        if (!filterButtons.includes(ingredient)) {
+                            filterButtons.push(ingredient);
+                        }
+                    });
+                });
+                // Create filter buttons
+                filterButtons.forEach(ingredient => {
+                    const button = document.createElement("button");
+                    button.textContent = ingredient;
+                    button.className = "filterButton";
+                    button.onclick = () => toggleFilter(ingredient);
+                    filterButtonsContainer.appendChild(button);
+                });
+            }
+        }
+
+        // Toggle filter for a specific ingredient
+        function toggleFilter(ingredient) {
+            const buttons = document.getElementsByClassName("filterButton");
+            const isActive = [...buttons].find(btn => btn.textContent === ingredient).classList.toggle("active");
+            const rows = document.getElementById("sushiTableBody").getElementsByTagName("tr");
+            const activeFilters = [...buttons].filter(btn => btn.classList.contains("active")).map(btn => btn.textContent.toLowerCase());
+            for (let i = 0; i < rows.length; i++) {
+                const ingredients = rows[i].getElementsByTagName("td")[1].textContent.toLowerCase();
+                const name = rows[i].getElementsByTagName("td")[0].textContent.toLowerCase();
+                if (activeFilters.every(filter => ingredients.includes(filter)) || activeFilters.length === 0) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            const buttons = document.getElementsByClassName("filterButton");
+            [...buttons].forEach(btn => btn.classList.remove("active"));
+            showSushiRolls();
+        }
+    </script>
+</body>
+</html>
